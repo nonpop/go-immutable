@@ -92,19 +92,30 @@ func NewSetBuilder[T any](hasher Hasher[T]) *SetBuilder[T] {
 	return &SetBuilder[T]{s: NewSet(hasher)}
 }
 
+func (s SetBuilder[T]) ToSet() Set[T] {
+	assert(s.s.m != nil, "immutable.SetBuilder.ToSet(): duplicate call to fetch set")
+	m := s.s.m
+	s.s.m = nil
+	return Set[T]{m: m}
+}
+
 func (s SetBuilder[T]) Set(val T) {
+	assert(s.s.m != nil, "immutable.SetBuilder: builder invalid after ToSet() invocation")
 	s.s.m = s.s.m.set(val, struct{}{}, true)
 }
 
 func (s SetBuilder[T]) Delete(val T) {
+	assert(s.s.m != nil, "immutable.SetBuilder: builder invalid after ToSet() invocation")
 	s.s.m = s.s.m.delete(val, true)
 }
 
 func (s SetBuilder[T]) Has(val T) bool {
+	assert(s.s.m != nil, "immutable.SetBuilder: builder invalid after ToSet() invocation")
 	return s.s.Has(val)
 }
 
 func (s SetBuilder[T]) Len() int {
+	assert(s.s.m != nil, "immutable.SetBuilder: builder invalid after ToSet() invocation")
 	return s.s.Len()
 }
 
